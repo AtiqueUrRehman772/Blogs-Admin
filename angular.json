@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/blogs-admin",
+            "outputPath": "dist/Blogs-Admin/browser",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -91,6 +91,59 @@
             ],
             "scripts": []
           }
+        },
+        "server": {
+          "builder": "@angular-devkit/build-angular:server",
+          "options": {
+            "outputPath": "dist/Blogs-Admin/server",
+            "main": "server.ts",
+            "tsConfig": "tsconfig.server.json"
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "media"
+            },
+            "development": {
+              "optimization": false,
+              "sourceMap": true,
+              "extractLicenses": false,
+              "vendorChunk": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve-ssr": {
+          "builder": "@nguniversal/builders:ssr-dev-server",
+          "configurations": {
+            "development": {
+              "browserTarget": "Blogs-Admin:build:development",
+              "serverTarget": "Blogs-Admin:server:development"
+            },
+            "production": {
+              "browserTarget": "Blogs-Admin:build:production",
+              "serverTarget": "Blogs-Admin:server:production"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "prerender": {
+          "builder": "@nguniversal/builders:prerender",
+          "options": {
+            "routes": [
+              "/"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "Blogs-Admin:build:production",
+              "serverTarget": "Blogs-Admin:server:production"
+            },
+            "development": {
+              "browserTarget": "Blogs-Admin:build:development",
+              "serverTarget": "Blogs-Admin:server:development"
+            }
+          },
+          "defaultConfiguration": "production"
         }
       }
     }
