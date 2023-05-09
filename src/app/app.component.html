@@ -5,17 +5,13 @@
     <a class="nav-link h3 text-dark m-4">
       Blogs Admin
     </a>
-    <li class="nav-link p-3 active" (click)="toggleActive($event)">
+    <li class="nav-link p-3 active" (click)="toggleActive($event);closeAddNew();closeEdit()">
       <i class="bx bxs-dashboard"></i>
-      <span class="mx-2">Home</span>
+      <span class="mx-2">Blogs</span>
     </li>
-    <li class="nav-link p-3" (click)="toggleActive($event)">
+    <li class="nav-link p-3" (click)="toggleActive($event);addNewBlog()">
       <i class="bx bx-user-check"></i>
-      <span class="mx-2">Profile</span>
-    </li>
-    <li class="nav-link p-3" (click)="toggleActive($event)">
-      <i class="bx bx-conversation"></i>
-      <span class="mx-2">Contact</span>
+      <span class="mx-2">Add new</span>
     </li>
   </ul>
 
@@ -33,13 +29,16 @@
   <nav class="navbar top-navbar navbar-light bg-light px-5">
     <a class="btn border-0" id="menu-btn"><i class="bx bx-menu"></i></a>
   </nav>
-  <div class="container-fluid p-2">
+  <button *ngIf="!AddNew" class="float-end btn p-2 m-1 btn-primary" (click)="addNewBlog()">Add Blogs</button>
+  <button *ngIf="AddNew" class="float-end btn m-2 btn" (click)="closeAddNew()"><i class="fa fa-arrow-left"></i></button>
+  <br> <br>
+  <div class="container-fluid p-2" *ngIf="!AddNew && !editBlg">
     <table id="example" class="table table-striped" style="width:100%">
       <thead>
         <tr>
           <th>Id</th>
           <th>Title</th>
-          <th>Url</th>
+          <th hidden>Url</th>
           <th>Description</th>
           <th>Written By</th>
           <th>Dated</th>
@@ -51,7 +50,7 @@
           <td>{{blog.Id}}</td>
           <td>{{blog.Title}}</td>
           <!-- {{blog.Url}} -->
-          <td></td>
+          <td hidden></td>
           <td>
             <details>
               <summary>{{blog.Title}}</summary>
@@ -61,8 +60,8 @@
           <td>{{blog.WrittenBy}}</td>
           <td>{{blog.PublishedOn}}</td>
           <td>
-            <button style="cursor: pointer;" class="btn btn-sm p-2 m-1" data-bs-toggle="offcanvas"
-              data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><i class="fa fa-pencil"></i></button>
+            <button style="cursor: pointer;" class="btn btn-sm p-2 m-1" (click)="selectItemForEdit(blog)"><i
+                class="fa fa-pencil"></i></button>
             <button style="cursor: pointer;" class="btn btn-sm p-2 m-1" (click)="deleteBlog()"><i
                 class="fa fa-trash"></i></button>
           </td>
@@ -76,39 +75,69 @@
       </tfoot>
     </table>
   </div>
-  <div class="offcanvas offcanvas-end w-75" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
-    <div class="offcanvas-header">
-      <!-- <h5 id="offcanvasRightLabel">Offcanvas right</h5> -->
-      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-      <form class="w-100 m-auto">
-        <div class="d-flex justify-content-evenly">
-          <div class="m-2 mb-3 w-50">
-            <label for="title" class="form-label">Title</label>
-            <input type="text" class="form-control" id="blogTitle" aria-describedby="blogTitle">
-          </div>
-          <div class="m-2 mb-3 w-50">
-            <label for="url" class="form-label">Url</label>
-            <input type="text" class="form-control" id="blogUrl">
-          </div>
+  <div class="container-fluid p-2" [hidden]="!AddNew">
+    <form class="w-100 m-auto" [formGroup]="BlogForm" (ngSubmit)="onSubmit()">
+      <div class="d-flex justify-content-evenly">
+        <div class="m-2 mb-3 w-50">
+          <label for="title" class="form-label">Title</label>
+          <input type="text" class="form-control" formControlName="title" id="blogTitle" aria-describedby="blogTitle">
         </div>
-        <div class="d-flex justify-content-evenly">
-          <div class="m-2 mb-3 w-50">
-            <label for="Writer" class="form-label">Writer</label>
-            <input type="text" class="form-control" id="blogWriter" aria-describedby="blogWriter">
-          </div>
-          <div class="m-2 mb-3 w-50">
-            <label for="blogImg" class="form-label">Image</label>
-            <input type="file" class="form-control" id="blogImage">
-          </div>
+        <div class="m-2 mb-3 w-50">
+          <label for="url" class="form-label">Url</label>
+          <input type="text" class="form-control" id="blogUrl" formControlName="url">
         </div>
-        <div class="container-fluid">
-          <textarea id="editor"></textarea>
+      </div>
+      <div class="d-flex justify-content-evenly">
+        <div class="m-2 mb-3 w-50">
+          <label for="Writer" class="form-label">Writer</label>
+          <input type="text" class="form-control" id="blogWriter" aria-describedby="blogWriter"
+            formControlName="writer">
         </div>
-        
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </form>
-    </div>
+        <div class="m-2 mb-3 w-50">
+          <label for="blogImg" class="form-label">Image</label>
+          <input type="file" class="form-control" id="blogImage" formControlName="img">
+          <!-- <img width="250" height="200" [src]="beingEdited.Url" alt="Blog Image"> -->
+        </div>
+      </div>
+      <div class="container-fluid">
+        <textarea id="editor" name="editor" formControlName="details" (change)="getValue($event)">
+      </textarea>
+      </div>
+      <button type="button" class="m-3 btn btn-secondary">Cancel</button>
+      <button type="submit" class="m-3 btn btn-primary">Submit</button>
+    </form>
   </div>
-</div>
+  <div class="container-fluid p-2" [hidden]="!editBlg">
+    <form class="w-100 m-auto" [formGroup]="BlogEditForm" (ngSubmit)="onUpdate()">
+      <div class="d-flex justify-content-evenly">
+        <div class="m-2 mb-3 w-50">
+          <label for="title" class="form-label">Title</label>
+          <input type="text" formControlName="editTitle" [value]="beingEdited.Title" class="form-control"
+            aria-describedby="blogTitle">
+        </div>
+        <div class="m-2 mb-3 w-50">
+          <label for="url" class="form-label">Url</label>
+          <input type="text" formControlName="editUrl" [value]="beingEdited.Url" class="form-control">
+        </div>
+      </div>
+      <div class="d-flex justify-content-evenly">
+        <div class="m-2 mb-3 w-50">
+          <label for="Writer" class="form-label">Writer</label>
+          <input type="text" formControlName="editWriter" [value]="beingEdited.WrittenBy" class="form-control"
+            aria-describedby="blogWriter">
+        </div>
+        <div class="m-2 mb-3 w-50">
+          <label for="blogImg" class="form-label">Image</label>
+          <input type="file" class="form-control">
+          <!-- <img width="250" height="200" [src]="beingEdited.Url" alt="Blog Image"> -->
+        </div>
+      </div>
+
+      <div class="container-fluid">
+        <textarea id="editor2" name="editor"></textarea>
+      </div>
+
+      <button type="button" class="m-3 btn btn-secondary" (click)="closeEdit()">Cancel</button>
+      <button type="submit" class="m-3 btn btn-primary">Save</button>
+    </form>
+  </div>

@@ -12,4 +12,7 @@ export class MasterApiService {
   getAllBlogs(){
    return this.http.get<Array<BlogsModel>>('https://dotnetcore-apis.getallpapers.com/api/Admin/GetAllBlogs'); 
   }
+  updateBlog(payload:BlogsModel){
+   return this.http.post('https://dotnetcore-apis.getallpapers.com/api/Admin/UpdateBlog',payload); 
+  }
 }
