@@ -1,9 +1,4 @@
 @import url(https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css);
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
   
   body {
     min-height: 100vh;
@@ -21,6 +16,7 @@
   .nav-link{
     transition: 500ms ease;
     cursor: pointer;
+    color: #000 !important;
   }
   .nav-link:active,
   .nav-link:focus,
@@ -50,7 +46,7 @@
   }
   
   .my-container input {
-    border-radius: 2rem;
-    padding: 2px 20px;
+    /* border-radius: 2rem;
+    padding: 2px 20px; */
   }
   

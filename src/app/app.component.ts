@@ -22,8 +22,10 @@ export class AppComponent implements OnInit {
       sidebar.classList.toggle("active-nav");
       container.classList.toggle("active-cont");
     });
-    //@ts-ignore
-    $('#example').DataTable();
+    setTimeout(()=>{
+      //@ts-ignore
+      $('#example').DataTable();
+    },1000);
 
     this.getAllBlogs();
   }
@@ -41,5 +43,27 @@ export class AppComponent implements OnInit {
       console.log(response);
       this.blogsList = response;
     });
+  }
+
+
+  deleteBlog(){
+    //@ts-ignore
+    Swal.fire({
+      title: 'Do you want to delete this blog?',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Delete',
+      denyButtonText: `Don't delete`,
+      //@ts-ignore
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        //@ts-ignore
+        Swal.fire('Deleted!', '', 'success')
+      } else if (result.isDenied) {
+        //@ts-ignore
+        Swal.fire('Operation cancelled!', '', 'info')
+      }
+    })
   }
 }
